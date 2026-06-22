@@ -2,267 +2,266 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mohammed Noufal &amp; Khadeejathul Kubra — Wedding Invitation</title>
-  <meta name="description" content="You are cordially invited to the Nikah ceremony of Mohammed Noufal and Khadeejathul Kubra CA on Monday, July 20, 2026 at KH Hall, Kalanad.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>💍 Mohammed Noufal &amp; Khadeejathul Kubra — Wedding Invitation</title>
+  <meta name="description" content="You are cordially invited to the Nikah of Mohammed Noufal & Khadeejathul Kubra CA on Monday, 20 July 2026 at KH Hall, Kalanad.">
+  <meta property="og:title" content="💍 Wedding Invitation — You're Invited">
+  <meta property="og:description" content="Join us to celebrate our special day. Tap to open the invitation.">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <!-- ════════ MUSIC BUTTON ════════ -->
-  <button id="music-btn" title="Play music" aria-label="Toggle background music" style="display:none;">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+<!-- ══════════════════════════════
+     SPLASH / ENVELOPE SCREEN
+══════════════════════════════ -->
+<div id="splash">
+  <span class="splash-floral-tl" aria-hidden="true">🌸</span>
+  <span class="splash-floral-tr" aria-hidden="true">🌸</span>
+  <span class="splash-floral-bl" aria-hidden="true">🌿</span>
+  <span class="splash-floral-br" aria-hidden="true">🌿</span>
+
+  <p class="splash-sub">You are cordially invited to the</p>
+
+  <div class="envelope-wrap" id="envelope" role="button" tabindex="0" aria-label="Open invitation">
+    <div class="env-body">
+      <div class="env-flap"></div>
+      <div class="env-letter">💍</div>
+    </div>
+  </div>
+
+  <h1 class="splash-title">Mohammed Noufal<br>&amp; Kubra</h1>
+  <p class="splash-sub">Nikah Ceremony · 20 July 2026</p>
+
+  <button class="splash-btn" id="open-btn" type="button">
+    Open Invitation ✦
   </button>
 
-  <!-- ════════ HERO ════════ -->
-  <section id="hero" aria-label="Wedding invitation">
+  <p class="splash-hint">Tap the envelope or button to open</p>
+</div>
 
-    <!-- Decorative borders -->
-    <div class="hero-inner-border"></div>
+<!-- ══════════════════════════════
+     FLORAL CORNER DECORATIONS
+══════════════════════════════ -->
+<span class="floral-corner tl" aria-hidden="true">🌸</span>
+<span class="floral-corner tr" aria-hidden="true">🌸</span>
+<span class="floral-corner bl" aria-hidden="true">🌿</span>
+<span class="floral-corner br" aria-hidden="true">🌿</span>
 
-    <!-- Corner flower decorations -->
-    <span class="hero-flower tl" aria-hidden="true">🌸</span>
-    <span class="hero-flower tr" aria-hidden="true">🌸</span>
-    <span class="hero-flower bl" aria-hidden="true">🌿</span>
-    <span class="hero-flower br" aria-hidden="true">🌿</span>
+<!-- ══════════════════════════════
+     MUSIC FAB
+══════════════════════════════ -->
+<button id="music-fab" aria-label="Toggle music" title="Play background music" style="display:none;">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+</button>
+
+<!-- ══════════════════════════════
+     MAIN INVITATION
+══════════════════════════════ -->
+<div id="invitation">
+
+  <!-- ── HERO ── -->
+  <section id="inv-hero">
+
+    <!-- Gold frames -->
+    <div class="hero-frame"></div>
+    <div class="hero-frame-inner"></div>
 
     <!-- Bismillah -->
-    <div class="hero-bismillah" id="hero-bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
-    <p class="hero-blessing">— With Allah's Blessings —</p>
-
-    <!-- Parents -->
-    <p class="hero-parents" id="hero-parents">MR. CH ABDULLA &amp; MRS. RABIYA</p>
+    <div class="hero-bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+    <p class="hero-blessing">In the name of Allah, the Most Gracious, the Most Merciful</p>
 
     <!-- Request -->
-    <p class="hero-request" id="hero-request">
-      Request the pleasure of your presence with family on the auspicious occasion of the marriage of our son
+    <p class="hero-tagline">
+      MR. CH ABDULLA &amp; MRS. RABIYA<br>
+      <span style="font-weight:300; font-size:.9em;">request the pleasure of your presence at the Nikah of their son</span>
     </p>
 
-    <div class="divider divider-gold" style="max-width:200px;">
-      <div class="divider-icon">✦</div>
+    <div class="hero-divider">
+      <div class="hero-divider-icon">✦</div>
     </div>
 
     <!-- Groom -->
-    <h1 class="hero-name" id="hero-name1">Mohammed Noufal</h1>
-    <p class="hero-lineage" id="hero-lineage1">
-      Grand s/o (Late) Ahammed Master Chettukund &amp;<br>
-      (Late) Khazi CM Abdulla Moulavi Chembirika
-    </p>
+    <div class="hero-groom" id="hero-groom">Mohammed Noufal</div>
 
-    <!-- Ampersand -->
-    <span class="hero-ampersand">&amp;</span>
+    <span class="hero-amp">&amp;</span>
 
     <!-- Bride -->
-    <div class="hero-name" id="hero-name2">Khadeejathul Kubra CA</div>
-    <p class="hero-lineage" id="hero-lineage2">
-      D/o Mr. Kunnil Abdulla Ahmed &amp; Mrs. Ruqiya CU<br>
-      Grand D/o (Late) CM Ubaidulla Moulavi Chembirika &amp;<br>
-      (Late) Kunnil Ahmed Chembirika
-    </p>
+    <div class="hero-bride" id="hero-bride">Khadeejathul Kubra</div>
 
-    <!-- Date -->
-    <div class="divider divider-gold" style="max-width:300px; margin-top:28px;">
-      <div class="divider-icon">✦</div>
+    <div class="hero-divider" style="margin-top:28px;">
+      <div class="hero-divider-icon">✦</div>
     </div>
 
-    <div class="hero-date-block">
-      <p class="hero-day" id="hero-day-text">Monday</p>
+    <!-- Date -->
+    <div class="hero-date-wrap">
+      <p class="hero-weekday">Monday</p>
       <div class="hero-date-row">
-        <span class="hero-date-part" id="hero-month">July</span>
-        <span class="hero-date-num" id="hero-date-num">20</span>
-        <span class="hero-date-part" id="hero-year">2026</span>
+        <span class="hero-date-month">July</span>
+        <span class="hero-date-day" id="hero-date-day">20</span>
+        <span class="hero-date-year">2026</span>
       </div>
+    </div>
+
+    <div class="hero-divider" style="margin-top:20px;">
+      <div class="hero-divider-icon">✦</div>
     </div>
 
     <!-- Venue -->
-    <div class="divider divider-gold" style="max-width:260px; margin-top:20px;">
-      <div class="divider-icon">✦</div>
-    </div>
-
-    <p class="hero-venue" id="hero-venue">@KH HALL, KALANAD</p>
-    <p class="hero-event" id="hero-event">NIKAH @ 11 AM</p>
-
-    <!-- Scroll hint -->
-    <div class="scroll-hint" aria-hidden="true">
-      <span></span>
-      SCROLL
+    <div class="hero-venue-wrap">
+      <p class="hero-venue-name" id="hero-venue">@KH HALL, KALANAD</p>
+      <p class="hero-time" id="hero-time">Nikah · 11:00 AM</p>
     </div>
 
   </section>
 
-  <!-- ════════ COUNTDOWN ════════ -->
-  <section id="countdown" aria-label="Countdown to the wedding">
-    <span class="section-label">The Big Day Is Near</span>
-    <div class="countdown-grid">
-      <div class="countdown-item">
-        <div class="countdown-number" id="cd-days" data-sep=":">00</div>
-        <div class="countdown-label">Days</div>
+  <!-- ── COUNTDOWN ── -->
+  <section id="inv-countdown">
+    <p class="cd-label">Wedding Countdown</p>
+    <div class="cd-title">Time Until the Big Day</div>
+
+    <div class="cd-grid">
+      <div class="cd-item">
+        <div class="cd-num" id="cd-days">00</div>
+        <div class="cd-unit">Days</div>
       </div>
-      <div class="countdown-item">
-        <div class="countdown-number" id="cd-hours" data-sep=":">00</div>
-        <div class="countdown-label">Hours</div>
+      <div class="cd-item">
+        <div class="cd-num" id="cd-hours">00</div>
+        <div class="cd-unit">Hours</div>
       </div>
-      <div class="countdown-item">
-        <div class="countdown-number" id="cd-mins" data-sep=":">00</div>
-        <div class="countdown-label">Minutes</div>
+      <div class="cd-item">
+        <div class="cd-num" id="cd-mins">00</div>
+        <div class="cd-unit">Mins</div>
       </div>
-      <div class="countdown-item">
-        <div class="countdown-number" id="cd-secs">00</div>
-        <div class="countdown-label">Seconds</div>
+      <div class="cd-item">
+        <div class="cd-num" id="cd-secs">00</div>
+        <div class="cd-unit">Secs</div>
       </div>
+    </div>
+
+    <div class="cd-actions">
+      <a id="add-to-calendar-btn" href="#" class="btn-outline" target="_blank" rel="noopener">
+        📅 Add to Calendar
+      </a>
+      <a id="get-directions-btn" href="https://maps.google.com/?q=KH+Hall+Kalanad+Kerala" class="btn-outline" target="_blank" rel="noopener">
+        📍 Get Directions
+      </a>
     </div>
   </section>
 
-  <!-- ════════ STORY / MESSAGE ════════ -->
-  <section id="story" aria-label="Invitation message">
-    <div class="story-content">
-      <span class="section-label">The Occasion</span>
-      <h2 class="section-heading">A Blessed Union</h2>
+  <!-- ── RSVP ── -->
+  <section id="inv-rsvp">
+    <p class="rsvp-section-label">RSVP</p>
+    <h2 class="rsvp-title">Will You Attend?</h2>
+    <p class="rsvp-sub">Please let us know so we can celebrate together</p>
 
-      <div class="divider">
-        <div class="divider-icon">✦</div>
+    <!-- Step 1: Yes / No -->
+    <div class="rsvp-step active" id="rsvp-step-1">
+      <div class="rsvp-choices">
+
+        <button class="btn-rsvp-choice yes-btn" id="rsvp-yes" type="button">
+          <span class="choice-icon">🌸</span>
+          <span class="choice-label">Yes, I'll attend</span>
+        </button>
+
+        <button class="btn-rsvp-choice no-btn" id="rsvp-no" type="button">
+          <span class="choice-icon">🙏</span>
+          <span class="choice-label">Can't make it</span>
+        </button>
+
       </div>
-
-      <blockquote class="story-quote reveal" id="story-quote">
-        "And among His signs is that He created for you mates from among yourselves, that you may dwell in tranquility with them, and He has put love and mercy between your hearts."
-      </blockquote>
-
-      <p class="story-text reveal" id="story-text">
-        With hearts full of gratitude to Allah, we joyfully invite you to witness and celebrate the Nikah of
-        Mohammed Noufal and Khadeejathul Kubra CA. May this union be filled with blessings, love, and happiness.
-      </p>
-
-      <div class="divider" style="margin-top: 32px;">
-        <div class="divider-icon">✦</div>
-      </div>
-
-      <p class="story-text reveal" id="story-message" style="font-style:italic; margin-top:18px; font-size:.95rem;">
-        Request the pleasure of your presence with family on the auspicious occasion of the marriage of our son.
-      </p>
-    </div>
-  </section>
-
-  <!-- ════════ DETAILS ════════ -->
-  <section id="details" aria-label="Event details">
-    <span class="section-label" style="text-align:center; display:block;">Event Details</span>
-    <h2 class="section-heading">Join Us</h2>
-
-    <div class="divider">
-      <div class="divider-icon">✦</div>
     </div>
 
-    <div class="details-grid">
+    <!-- Step 2a: Attending — guest count -->
+    <div class="rsvp-step" id="rsvp-step-yes">
 
-      <!-- Nikah -->
-      <div class="detail-card reveal">
-        <span class="detail-icon">🕌</span>
-        <h3 class="detail-title">Nikah Ceremony</h3>
-        <div class="detail-info">
-          <strong id="ceremony-time">11:00 AM</strong>
-          <span id="ceremony-venue">KH Hall, Kalanad</span><br>
-          <span id="ceremony-address" style="font-size:.8rem; opacity:.75;">Monday, 20 July 2026</span>
+      <div style="margin-bottom:8px;">
+        <p style="font-family:var(--font-head); font-size:1.2rem; color:var(--rg-dark); margin-bottom:4px;">Wonderful! 🎉</p>
+        <p class="rsvp-sub">How many family members will attend?</p>
+      </div>
+
+      <div class="guest-counter">
+        <button class="counter-btn" id="guest-minus" type="button" aria-label="Decrease">−</button>
+        <div class="counter-num" id="guest-count">1</div>
+        <button class="counter-btn" id="guest-plus" type="button" aria-label="Increase">+</button>
+      </div>
+      <p class="counter-hint">Including yourself</p>
+
+      <div>
+        <button class="btn-confirm" id="confirm-yes" type="button">Confirm Attendance ✦</button>
+      </div>
+    </div>
+
+    <!-- Step 2b: Not attending -->
+    <div class="rsvp-step" id="rsvp-step-no">
+      <div class="rsvp-success-card">
+        <div class="rsvp-success-icon">🤲</div>
+        <div class="rsvp-success-title">We'll Miss You</div>
+        <p class="rsvp-success-text">
+          We completely understand. May Allah bless you and your family. Kindly keep us in your prayers on our special day.
+        </p>
+        <button class="btn-confirm" style="margin-top:20px; max-width:240px;" onclick="resetRsvp()" type="button">Go Back</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Confirmed -->
+    <div class="rsvp-step" id="rsvp-step-done">
+      <div class="rsvp-success-card">
+        <div class="rsvp-success-icon">🎊</div>
+        <div class="rsvp-success-title">We Can't Wait!</div>
+        <p class="rsvp-success-text">
+          Jazakallahu Khayran, dear guest. We're thrilled you'll be joining us. Your presence will make our day even more special.
+        </p>
+      </div>
+
+      <div class="info-card reveal" id="info-card">
+        <div class="info-row">
+          <span class="info-icon">🕌</span>
+          <div>
+            <div class="info-label">Event</div>
+            <div class="info-value">Nikah Ceremony</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-icon">📅</span>
+          <div>
+            <div class="info-label">Date &amp; Time</div>
+            <div class="info-value">Monday, 20 July 2026 · 11:00 AM</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-icon">📍</span>
+          <div>
+            <div class="info-label">Venue</div>
+            <div class="info-value">KH Hall, Kalanad, Kerala</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-icon">👥</span>
+          <div>
+            <div class="info-label">Your RSVP</div>
+            <div class="info-value" id="rsvp-summary-guests">1 Guest</div>
+          </div>
+        </div>
+        <div class="info-actions">
+          <a id="cal-confirm-btn" href="#" class="btn-action" target="_blank" rel="noopener">📅 Add to Calendar</a>
+          <a href="https://maps.google.com/?q=KH+Hall+Kalanad+Kerala" class="btn-action" target="_blank" rel="noopener">📍 Directions</a>
         </div>
       </div>
-
-      <!-- Date -->
-      <div class="detail-card reveal">
-        <span class="detail-icon">📅</span>
-        <h3 class="detail-title">Date</h3>
-        <div class="detail-info">
-          <strong id="reception-time">Monday</strong>
-          <span id="reception-venue">20th July 2026</span><br>
-          <span id="reception-address" style="font-size:.8rem; opacity:.75;">Hijri: 25 Muharram 1448</span>
-        </div>
-      </div>
-
-      <!-- Dress -->
-      <div class="detail-card reveal">
-        <span class="detail-icon">🤲</span>
-        <h3 class="detail-title">Please Note</h3>
-        <div class="detail-info">
-          <strong style="color:var(--blue);">Walima Follows</strong>
-          Reception to be announced<br>
-          <span style="font-size:.8rem; opacity:.75;">Your prayers are our blessing</span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ════════ GALLERY ════════ -->
-  <section id="gallery" aria-label="Photo gallery">
-    <span class="section-label">Gallery</span>
-    <h2 class="section-heading">Moments Together</h2>
-    <div class="divider"><div class="divider-icon">✦</div></div>
-    <div class="gallery-grid" id="gallery-grid">
-      <p class="gallery-empty">No photos added yet — add them via the dashboard.</p>
-    </div>
-  </section>
-
-  <!-- ════════ RSVP ════════ -->
-  <section id="rsvp" aria-label="RSVP form">
-    <span class="section-label">RSVP</span>
-    <h2>Kindly Confirm</h2>
-    <p>Please let us know if you will be joining us</p>
-
-    <form class="rsvp-form" id="rsvp-form" novalidate>
-
-      <div class="form-group">
-        <label for="rsvp-name">Full Name *</label>
-        <input type="text" id="rsvp-name" placeholder="Your full name" required autocomplete="name">
-      </div>
-
-      <div class="form-group">
-        <label for="rsvp-email">Phone / Email</label>
-        <input type="text" id="rsvp-email" placeholder="Phone number or email" autocomplete="email">
-      </div>
-
-      <div class="form-group">
-        <label for="rsvp-attending">Will you attend?</label>
-        <select id="rsvp-attending">
-          <option value="yes">Insha'Allah, will attend</option>
-          <option value="maybe">Hope to attend</option>
-          <option value="no">Regretfully unable to attend</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="rsvp-guests">Number of Guests</label>
-        <select id="rsvp-guests">
-          <option value="1">1 guest</option>
-          <option value="2">2 guests</option>
-          <option value="3">3 guests</option>
-          <option value="4">4 guests</option>
-          <option value="5">5+ guests</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="rsvp-message">Wishes for the Couple</label>
-        <textarea id="rsvp-message" placeholder="Share your duas and wishes..." rows="3"></textarea>
-      </div>
-
-      <button type="submit" class="btn-rsvp">Confirm Attendance</button>
-
-    </form>
-
-    <div class="rsvp-success" id="rsvp-success">
-      🌸 Jazakallahu Khayran! Your RSVP has been received. We look forward to celebrating with you.
     </div>
 
   </section>
 
-  <!-- ════════ FOOTER ════════ -->
-  <footer>
-    <div class="footer-arabic">بِسْمِ اللَّهِ</div>
-    <div class="footer-script" id="footer-script">Mohammed Noufal &amp; Khadeejathul Kubra</div>
-    <p class="footer-text">20 · July · 2026 · KH Hall, Kalanad</p>
-    <p class="footer-text" style="margin-top:10px; font-size:.65rem; opacity:.35;">
+  <!-- ── FOOTER ── -->
+  <footer id="inv-footer">
+    <div class="footer-script">Mohammed Noufal &amp; Khadeejathul Kubra</div>
+    <p class="footer-date">20 · July · 2026 · KH Hall, Kalanad</p>
+    <p style="font-size:.65rem; color:rgba(255,255,255,.2); margin-top:16px; position:relative;">
       <a href="dashboard.html" style="color:inherit; text-decoration:none;">Admin Dashboard</a>
     </p>
   </footer>
 
-  <script src="js/main.js"></script>
+</div><!-- /invitation -->
 
+<script src="js/main.js"></script>
 </body>
 </html>

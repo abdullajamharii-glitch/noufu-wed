@@ -8,20 +8,20 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:        #0f0e0d;
-  --surface:   #1a1917;
-  --surface2:  #221f1c;
-  --surface3:  #2c2825;
-  --gold:      #b8996e;
-  --gold-light:#d4b896;
-  --gold-dark: #8a7050;
-  --ivory:     #faf7f2;
-  --taupe:     #8c7b6b;
-  --taupe-light: #c4b4a2;
+  --bg:        #0f0d0c;
+  --surface:   #1a1714;
+  --surface2:  #221915;
+  --surface3:  #2c1f18;
+  --gold:      #c9956c;
+  --gold-light:#e8c5a8;
+  --gold-dark: #8b5e3c;
+  --ivory:     #fdf8f3;
+  --taupe:     #8c7060;
+  --taupe-light: #c4a898;
   --danger:    #c0645a;
   --success:   #7aaa8a;
-  --border:    rgba(184,153,110,.14);
-  --border-focus: rgba(184,153,110,.5);
+  --border:    rgba(201,149,108,.14);
+  --border-focus: rgba(201,149,108,.5);
 
   --font: 'Inter', sans-serif;
   --font-head: 'Cormorant Garamond', serif;

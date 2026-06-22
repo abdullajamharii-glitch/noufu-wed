@@ -1,10 +1,10 @@
 /* ===================================================
    MAIN INVITATION — JavaScript
+   Splash, Countdown, RSVP Flow, Music, Calendar
 =================================================== */
 
 const STORAGE_KEY = 'wedding_config';
 
-// Default configuration
 const DEFAULTS = {
   person1: 'Mohammed Noufal',
   person2: 'Khadeejathul Kubra CA',
@@ -16,8 +16,8 @@ const DEFAULTS = {
   receptionVenue: 'Walima to be announced',
   receptionAddress: '',
   message: 'Request the pleasure of your presence with family on the auspicious occasion of the marriage of our son.',
-  storyQuote: '"And among His signs is that He created for you mates from among yourselves, that you may dwell in tranquility with them, and He has put love and mercy between your hearts."',
-  storyText: 'With hearts full of gratitude to Allah, we joyfully invite you to witness and celebrate the Nikah of Mohammed Noufal and Khadeejathul Kubra CA. May this union be filled with blessings, love, and happiness.',
+  storyQuote: '"And among His signs is that He created for you mates from among yourselves, that you may dwell in tranquility with them."',
+  storyText: 'With hearts full of gratitude to Allah, we joyfully invite you to witness and celebrate this blessed union.',
   musicUrl: '',
   musicAutoplay: false,
   musicEnabled: true,
@@ -31,46 +31,69 @@ function getConfig() {
   } catch { return { ...DEFAULTS }; }
 }
 
-// ─── Populate content ──────────────────────────────
+// ══════════════════════════════════════════════════
+// SPLASH / ENVELOPE
+// ══════════════════════════════════════════════════
+function openInvitation() {
+  const splash = document.getElementById('splash');
+  const invitation = document.getElementById('invitation');
+  const envelope = document.getElementById('envelope');
+
+  envelope.classList.add('open');
+
+  setTimeout(() => {
+    splash.classList.add('hidden');
+    setTimeout(() => {
+      splash.style.display = 'none';
+      invitation.classList.add('show');
+      startCountdown();
+      observeReveal();
+      setupCalendarLinks();
+    }, 800);
+  }, 500);
+}
+
+document.getElementById('open-btn').addEventListener('click', openInvitation);
+
+document.getElementById('envelope').addEventListener('click', openInvitation);
+document.getElementById('envelope').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') openInvitation();
+});
+
+// ══════════════════════════════════════════════════
+// POPULATE PAGE FROM CONFIG
+// ══════════════════════════════════════════════════
 function populatePage() {
   const cfg = getConfig();
 
-  // Hero
-  setEl('hero-name1', cfg.person1);
-  setEl('hero-name2', cfg.person2);
+  // Names
+  setEl('hero-groom', cfg.person1);
+  setEl('hero-bride', cfg.person2.replace(' CA', ''));
+  setEl('hero-venue', '@' + cfg.ceremonyVenue.toUpperCase());
+  setEl('hero-time', 'Nikah · ' + formatTime(cfg.ceremonyTime));
 
-  // Date
+  // Date parts
   if (cfg.weddingDate) {
-    const date = new Date(cfg.weddingDate + 'T12:00:00');
-    const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    setEl('hero-date-text', date.toLocaleDateString('en-US', opts));
-    setEl('hero-date-text2', date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }));
+    const d = new Date(cfg.weddingDate + 'T12:00:00');
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    setEl('hero-date-day', d.getDate());
+
+    // Update month/year in the date row
+    const monthEl = document.querySelector('.hero-date-month');
+    const yearEl  = document.querySelector('.hero-date-year');
+    const weekEl  = document.querySelector('.hero-weekday');
+    if (monthEl) monthEl.textContent = months[d.getMonth()];
+    if (yearEl)  yearEl.textContent  = d.getFullYear();
+    if (weekEl)  weekEl.textContent  = days[d.getDay()];
   }
 
-  // Ceremony
-  setEl('ceremony-time', cfg.ceremonyTime);
-  setEl('ceremony-venue', cfg.ceremonyVenue);
-  setEl('ceremony-address', cfg.ceremonyAddress);
-
-  // Reception
-  setEl('reception-time', cfg.receptionTime);
-  setEl('reception-venue', cfg.receptionVenue);
-  setEl('reception-address', cfg.receptionAddress);
-
-  // Story
-  setEl('story-quote', cfg.storyQuote);
-  setEl('story-text', cfg.storyText);
-  setEl('story-message', cfg.message);
+  // Page title
+  document.title = `💍 ${cfg.person1} & ${cfg.person2} — Wedding Invitation`;
 
   // Footer
-  const footerScript = document.getElementById('footer-script');
-  if (footerScript) footerScript.textContent = cfg.person1 + ' & ' + cfg.person2;
-
-  // Page title
-  document.title = cfg.person1 + ' & ' + cfg.person2 + ' — Wedding Invitation';
-
-  // Gallery
-  renderGallery(cfg.galleryImages);
+  const footerScript = document.querySelector('.footer-script');
+  if (footerScript) footerScript.textContent = cfg.person1 + ' & ' + cfg.person2.replace(' CA','');
 
   // Music
   setupMusic(cfg);
@@ -81,68 +104,139 @@ function setEl(id, text) {
   if (el) el.textContent = text;
 }
 
-// ─── Gallery ───────────────────────────────────────
-function renderGallery(images) {
-  const grid = document.getElementById('gallery-grid');
-  if (!grid) return;
-
-  grid.innerHTML = '';
-  if (!images || images.length === 0) {
-    grid.innerHTML = '<p class="gallery-empty">No photos added yet.</p>';
-    return;
-  }
-  images.forEach(src => {
-    const item = document.createElement('div');
-    item.className = 'gallery-item reveal';
-    item.innerHTML = `<img src="${src}" alt="Wedding photo" loading="lazy">`;
-    grid.appendChild(item);
-  });
-  observeReveal();
+function formatTime(t) {
+  if (!t) return '11:00 AM';
+  const [h, m] = t.split(':');
+  const hour = parseInt(h);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const h12  = hour % 12 || 12;
+  return `${h12}:${m || '00'} ${ampm}`;
 }
 
-// ─── Countdown Timer ───────────────────────────────
+// ══════════════════════════════════════════════════
+// COUNTDOWN
+// ══════════════════════════════════════════════════
 function startCountdown() {
   const cfg = getConfig();
-  if (!cfg.weddingDate) {
-    document.getElementById('countdown')?.classList.add('hidden');
-    return;
-  }
+  if (!cfg.weddingDate) return;
 
-  const target = new Date(cfg.weddingDate + 'T' + (cfg.ceremonyTime || '12:00') + ':00');
+  const target = new Date(cfg.weddingDate + 'T' + (cfg.ceremonyTime || '11:00') + ':00');
 
   function update() {
-    const now = new Date();
-    const diff = target - now;
-
+    const diff = target - new Date();
     if (diff <= 0) {
-      setEl('cd-days', '0'); setEl('cd-hours', '0');
-      setEl('cd-mins', '0');  setEl('cd-secs', '0');
+      ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => setEl(id, '00'));
       return;
     }
-
-    const days  = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const mins  = Math.floor((diff % 3600000) / 60000);
-    const secs  = Math.floor((diff % 60000) / 1000);
-
-    setEl('cd-days',  pad(days));
-    setEl('cd-hours', pad(hours));
-    setEl('cd-mins',  pad(mins));
-    setEl('cd-secs',  pad(secs));
+    setEl('cd-days',  pad(Math.floor(diff / 86400000)));
+    setEl('cd-hours', pad(Math.floor((diff % 86400000) / 3600000)));
+    setEl('cd-mins',  pad(Math.floor((diff % 3600000) / 60000)));
+    setEl('cd-secs',  pad(Math.floor((diff % 60000) / 1000)));
   }
-
   update();
   setInterval(update, 1000);
 }
 
 function pad(n) { return n < 10 ? '0' + n : String(n); }
 
-// ─── Music Player ──────────────────────────────────
+// ══════════════════════════════════════════════════
+// CALENDAR LINK
+// ══════════════════════════════════════════════════
+function setupCalendarLinks() {
+  const cfg = getConfig();
+  if (!cfg.weddingDate) return;
+
+  const date   = cfg.weddingDate.replace(/-/g, '');
+  const time   = (cfg.ceremonyTime || '11:00').replace(':', '') + '00';
+  const endHr  = String(parseInt((cfg.ceremonyTime || '11:00').split(':')[0]) + 3).padStart(2,'0');
+  const endTime = endHr + (cfg.ceremonyTime || '11:00').split(':')[1] + '00';
+
+  const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE`
+    + `&text=${encodeURIComponent('Nikah: ' + cfg.person1 + ' & ' + cfg.person2)}`
+    + `&dates=${date}T${time}/${date}T${endTime}`
+    + `&details=${encodeURIComponent('Wedding Nikah Ceremony')}`
+    + `&location=${encodeURIComponent(cfg.ceremonyVenue + ', ' + cfg.ceremonyAddress)}`;
+
+  document.querySelectorAll('#add-to-calendar-btn, #cal-confirm-btn').forEach(el => {
+    el.href = gcalUrl;
+  });
+}
+
+// ══════════════════════════════════════════════════
+// RSVP FLOW
+// ══════════════════════════════════════════════════
+let guestCount = 1;
+
+function showStep(id) {
+  document.querySelectorAll('.rsvp-step').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
+}
+
+// Yes
+document.getElementById('rsvp-yes').addEventListener('click', () => {
+  document.getElementById('rsvp-yes').classList.add('selected');
+  setTimeout(() => showStep('rsvp-step-yes'), 200);
+});
+
+// No
+document.getElementById('rsvp-no').addEventListener('click', () => {
+  document.getElementById('rsvp-no').classList.add('selected');
+  setTimeout(() => showStep('rsvp-step-no'), 200);
+});
+
+// Guest counter
+document.getElementById('guest-minus').addEventListener('click', () => {
+  if (guestCount > 1) { guestCount--; updateGuestDisplay(); }
+});
+document.getElementById('guest-plus').addEventListener('click', () => {
+  if (guestCount < 20) { guestCount++; updateGuestDisplay(); }
+});
+
+function updateGuestDisplay() {
+  setEl('guest-count', guestCount);
+}
+
+// Confirm attendance
+document.getElementById('confirm-yes').addEventListener('click', () => {
+  // Save RSVP
+  const rsvps = JSON.parse(localStorage.getItem('wedding_rsvps') || '[]');
+  rsvps.push({
+    id: Date.now(),
+    name: 'Guest',
+    email: '',
+    guests: guestCount,
+    attending: 'yes',
+    message: '',
+    date: new Date().toLocaleDateString('en-US')
+  });
+  localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps));
+
+  // Update summary
+  setEl('rsvp-summary-guests', guestCount + (guestCount === 1 ? ' Guest' : ' Guests'));
+
+  showStep('rsvp-step-done');
+  // Scroll to see the confirmation
+  setTimeout(() => {
+    document.getElementById('rsvp-step-done').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 300);
+});
+
+function resetRsvp() {
+  guestCount = 1;
+  updateGuestDisplay();
+  document.querySelectorAll('.btn-rsvp-choice').forEach(b => b.classList.remove('selected'));
+  showStep('rsvp-step-1');
+}
+
+// ══════════════════════════════════════════════════
+// MUSIC PLAYER
+// ══════════════════════════════════════════════════
 let audio = null;
 let musicPlaying = false;
 
 function setupMusic(cfg) {
-  const btn = document.getElementById('music-btn');
+  const btn = document.getElementById('music-fab');
   if (!btn) return;
 
   if (!cfg.musicEnabled || !cfg.musicUrl) {
@@ -151,43 +245,28 @@ function setupMusic(cfg) {
   }
 
   btn.style.display = 'flex';
-
   audio = new Audio();
   audio.loop = true;
-  audio.volume = 0.5;
+  audio.volume = 0.45;
 
-  // Try to load the music source
-  try {
-    audio.src = cfg.musicUrl;
-  } catch (e) {
-    btn.style.display = 'none';
-    return;
-  }
+  try { audio.src = cfg.musicUrl; } catch { btn.style.display = 'none'; return; }
 
   btn.addEventListener('click', toggleMusic);
 
-  // Autoplay (requires user gesture — will attempt, browser may block)
   if (cfg.musicAutoplay) {
-    audio.play().then(() => {
-      musicPlaying = true;
-      updateMusicBtn(btn, true);
-    }).catch(() => { /* Autoplay blocked — wait for user click */ });
+    audio.play().then(() => { musicPlaying = true; updateMusicBtn(btn, true); }).catch(() => {});
   }
 }
 
 function toggleMusic() {
-  const btn = document.getElementById('music-btn');
+  const btn = document.getElementById('music-fab');
   if (!audio) return;
-
   if (musicPlaying) {
     audio.pause();
     musicPlaying = false;
     updateMusicBtn(btn, false);
   } else {
-    audio.play().then(() => {
-      musicPlaying = true;
-      updateMusicBtn(btn, true);
-    }).catch(() => {});
+    audio.play().then(() => { musicPlaying = true; updateMusicBtn(btn, true); }).catch(() => {});
   }
 }
 
@@ -196,58 +275,25 @@ function updateMusicBtn(btn, playing) {
   btn.innerHTML = playing
     ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`
     : `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
-  btn.setAttribute('title', playing ? 'Pause music' : 'Play music');
+  btn.title = playing ? 'Pause music' : 'Play music';
 }
 
-// ─── RSVP Form ─────────────────────────────────────
-function setupRsvpForm() {
-  const form = document.getElementById('rsvp-form');
-  if (!form) return;
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name     = document.getElementById('rsvp-name').value.trim();
-    const email    = document.getElementById('rsvp-email').value.trim();
-    const guests   = document.getElementById('rsvp-guests').value;
-    const attending = document.getElementById('rsvp-attending').value;
-    const message  = document.getElementById('rsvp-message').value.trim();
-
-    if (!name) return;
-
-    // Save RSVP
-    const rsvps = JSON.parse(localStorage.getItem('wedding_rsvps') || '[]');
-    rsvps.push({
-      id: Date.now(),
-      name, email, guests: parseInt(guests), attending, message,
-      date: new Date().toLocaleDateString('en-US')
-    });
-    localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps));
-
-    // Show success
-    form.style.display = 'none';
-    document.getElementById('rsvp-success').style.display = 'block';
-  });
-}
-
-// ─── Scroll Reveal ─────────────────────────────────
+// ══════════════════════════════════════════════════
+// SCROLL REVEAL
+// ══════════════════════════════════════════════════
 function observeReveal() {
   const els = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
     });
-  }, { threshold: 0.12 });
-
-  els.forEach(el => observer.observe(el));
+  }, { threshold: 0.1 });
+  els.forEach(el => obs.observe(el));
 }
 
-// ─── Init ─────────────────────────────────────────
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   populatePage();
-  startCountdown();
-  setupRsvpForm();
-  observeReveal();
 });
