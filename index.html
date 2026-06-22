@@ -727,7 +727,7 @@
 <canvas id="confettiCanvas"></canvas>
 
 <div class="fab-controls">
-  <button class="fab-btn" id="fab-music" onclick="toggleMusic()" title="Toggle music" style="display:none;">🔔</button>
+  <button class="fab-btn" id="fab-music" onclick="toggleMusic()" title="Toggle music">🔇</button>
   <button class="fab-btn" id="fab-dark" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
 </div>
 
@@ -944,6 +944,10 @@
       </a>
     </div>
 
+    <div class="form-group" style="text-align: left; margin-bottom: 15px; width: 100%;">
+      <input type="text" id="guest-rsvp-name" placeholder="Your Name" style="width: 100%; border: 0.5px solid var(--border); border-radius: 50px; padding: 12px 18px; font-family: var(--font-sans); font-size: 13px; color: var(--text); background: var(--cream); outline: none; text-align: center;">
+    </div>
+
     <p class="tag" style="margin-bottom:10px;">Will you attend?</p>
     <div class="rsvp-grid">
       <button class="btn-yes" id="btn-yes-main" onclick="handleYes(event)">
@@ -1056,11 +1060,7 @@
 
 <!-- ══ STICKY FOOTER ══ -->
 <footer class="site-footer">
-  <span>Created by</span>
-  <span class="footer-dot"></span>
-  <a href="https://www.instagram.com/devbies.store" target="_blank" rel="noopener noreferrer">Devbies</a>
-  <span class="footer-dot"></span>
-  <a href="https://www.instagram.com/saleel.zakkariya" target="_blank" rel="noopener noreferrer">Saleel Zakkariya</a>
+  <a href="dashboard.html" style="color:var(--muted); text-decoration:none; font-size:10px; letter-spacing:1.4px;">Admin Dashboard</a>
 </footer>
 
 <script>
@@ -1082,24 +1082,42 @@
 
   var params = new URLSearchParams(window.location.search);
   function pget(shortK, longK) { return params.get(shortK) || params.get(longK) || ''; }
+
+  var localCfg = null;
+  try {
+    var stored = localStorage.getItem('wedding_config');
+    if (stored) localCfg = JSON.parse(stored);
+  } catch(e) {}
+
+  var defaultG = 'Mohammed Noufal';
+  var defaultB = 'Khadeejathul Kubra';
+  var defaultV = 'KH Hall, Kalanad';
+  var defaultA = 'Kalanad, Kerala';
+  var defaultD = '2026-07-20';
+  var defaultT = '11:00 AM';
+  var defaultQ = 'In the name of Allah, the Most Gracious, the Most Merciful';
+  var defaultTh = 'rosegold';
+  var defaultPt = 'floral';
+  var defaultFs = 'editorial';
+
   var INV = {
-    groom:    pget('g',  'groom'),
-    bride:    pget('b',  'bride'),
-    venue:    pget('v',  'venue'),
-    address:  pget('a',  'address'),
-    date:     pget('d',  'date'),
-    time:     pget('t',  'time'),
-    hijri:    pget('hj', 'hijri'),
-    phone:    pget('p',  'phone'),
-    maps:     pget('m',  'maps'),
-    theme:    pget('th', 'theme')    || 'green',
-    pattern:  pget('pt', 'pattern')  || 'none',
-    fontstyle:pget('fs', 'fontstyle')|| 'editorial',
-    quote:    pget('q',  'quote'),
-    dress:    pget('ds', 'dress')
+    groom:    pget('g',  'groom')     || (localCfg ? localCfg.person1 : defaultG),
+    bride:    pget('b',  'bride')     || (localCfg ? localCfg.person2 : defaultB),
+    venue:    pget('v',  'venue')     || (localCfg ? localCfg.ceremonyVenue : defaultV),
+    address:  pget('a',  'address')   || (localCfg ? localCfg.ceremonyAddress : defaultA),
+    date:     pget('d',  'date')      || (localCfg ? localCfg.weddingDate : defaultD),
+    time:     pget('t',  'time')      || (localCfg ? localCfg.ceremonyTime : defaultT),
+    hijri:    pget('hj', 'hijri')     || (localCfg ? localCfg.hijri : ''),
+    phone:    pget('p',  'phone')     || (localCfg ? localCfg.phone : ''),
+    maps:     pget('m',  'maps')      || (localCfg ? (localCfg.musicUrl && localCfg.musicUrl.startsWith('http') ? localCfg.musicUrl : '') : ''),
+    theme:    pget('th', 'theme')     || (localCfg ? localCfg.themeColor : defaultTh),
+    pattern:  pget('pt', 'pattern')   || (localCfg ? localCfg.backgroundPattern : defaultPt),
+    fontstyle:pget('fs', 'fontstyle') || (localCfg ? localCfg.fontStyle : defaultFs),
+    quote:    pget('q',  'quote')     || (localCfg ? localCfg.storyQuote : defaultQ),
+    dress:    pget('ds', 'dress')     || (localCfg ? localCfg.dress : '')
   };
 
-  var isInviteMode = INV.groom && INV.bride && INV.venue && INV.date;
+  var isInviteMode = !params.has('create');
   var currentTheme = 'green', currentPattern = 'none', currentFontStyle = 'editorial';
 
   function applyTheme(key) {
@@ -1331,21 +1349,67 @@
     bgMusic.volume = 1;
     var playPromise = bgMusic.play();
     if (playPromise !== undefined) {
-      playPromise.then(function() { musicPlaying = true; }).catch(function(err) { console.warn('Music play blocked:', err); musicPlaying = false; });
-    } else { musicPlaying = true; }
-  }
-  function stopMusic() { bgMusic.pause(); bgMusic.currentTime = 0; musicPlaying = false; }
-  function toggleMusic() {
-    var btn = document.getElementById('fab-music');
-    if (musicPlaying) { stopMusic(); if (btn) btn.textContent = '🔕'; }
-    else { startMusic(); if (btn) btn.textContent = '🔔'; }
+      playPromise.then(function() {
+        musicPlaying = true;
+        var btn = document.getElementById('fab-music');
+        if (btn) { btn.textContent = '🔊'; btn.classList.add('playing'); }
+      }).catch(function(err) {
+        console.warn('Music play blocked by browser autoplay policy:', err);
+        musicPlaying = false;
+      });
+    } else {
+      musicPlaying = true;
+      var btn = document.getElementById('fab-music');
+      if (btn) { btn.textContent = '🔊'; btn.classList.add('playing'); }
+    }
   }
 
+  function stopMusic() {
+    bgMusic.pause();
+    musicPlaying = false;
+    var btn = document.getElementById('fab-music');
+    if (btn) { btn.textContent = '🔇'; btn.classList.remove('playing'); }
+  }
+
+  function toggleMusic() {
+    if (musicPlaying) {
+      stopMusic();
+    } else {
+      startMusic();
+    }
+  }
+
+  // Attempt autoplay immediately and register backup interaction triggers for modern browsers
+  setTimeout(function() {
+    startMusic();
+    var interactionEvents = ['click', 'touchstart', 'scroll', 'keydown'];
+    function triggerAutoplay() {
+      startMusic();
+      interactionEvents.forEach(function(e) {
+        document.removeEventListener(e, triggerAutoplay);
+      });
+    }
+    interactionEvents.forEach(function(e) {
+      document.addEventListener(e, triggerAutoplay);
+    });
+  }, 100);
+
   function handleYes(event) {
+    var nameInput = document.getElementById('guest-rsvp-name');
+    var name = nameInput ? nameInput.value.trim() : '';
+    if (!name) {
+      if (nameInput) {
+        nameInput.style.borderColor = 'var(--red-soft)';
+        nameInput.placeholder = 'Please enter your name to RSVP';
+        nameInput.focus();
+      }
+      return;
+    }
+    if (nameInput) nameInput.style.borderColor = '';
+    window.tempRsvpName = name;
+
     launchFullPagePopper();
     try {
-      var btn = document.getElementById('fab-music');
-      if (btn) { btn.style.display = ''; btn.textContent = '🔔'; }
       startMusic();
     } catch(e) {}
     setTimeout(function() { showScreen('screen-rsvp'); }, 900);
@@ -1357,10 +1421,61 @@
     document.getElementById('member-count').textContent = memberCount;
   }
   function submitRsvp() {
+    var name = window.tempRsvpName || 'Guest';
+    var guests = memberCount;
+
+    var rsvps = [];
+    try {
+      rsvps = JSON.parse(localStorage.getItem('wedding_rsvps') || '[]');
+    } catch(e){}
+    rsvps.push({
+      name: name,
+      email: '',
+      guests: guests,
+      attending: 'yes',
+      message: 'Attending with ' + guests + ' family members',
+      date: new Date().toLocaleString()
+    });
+    try {
+      localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps));
+    } catch(e){}
+
+    var elName = document.getElementById('final-name');
+    if (elName) elName.textContent = name;
+
     showScreen('screen-final');
     setTimeout(function() { launchConfetti(); }, 300);
   }
+
   function declineRsvp() {
+    var nameInput = document.getElementById('guest-rsvp-name');
+    var name = nameInput ? nameInput.value.trim() : '';
+    if (!name) {
+      if (nameInput) {
+        nameInput.style.borderColor = 'var(--red-soft)';
+        nameInput.placeholder = 'Please enter your name to RSVP';
+        nameInput.focus();
+      }
+      return;
+    }
+    if (nameInput) nameInput.style.borderColor = '';
+
+    var rsvps = [];
+    try {
+      rsvps = JSON.parse(localStorage.getItem('wedding_rsvps') || '[]');
+    } catch(e){}
+    rsvps.push({
+      name: name,
+      email: '',
+      guests: 0,
+      attending: 'no',
+      message: 'Declined',
+      date: new Date().toLocaleString()
+    });
+    try {
+      localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps));
+    } catch(e){}
+
     var d = new Date(INV.date + 'T12:00:00');
     var day = d.getDate();
     var monthName = MONTHS[d.getMonth()];
@@ -1369,6 +1484,8 @@
     var venueText = INV.venue + (INV.address ? ', ' + INV.address : '');
     var el = document.getElementById('decline-date-text'); if (el) el.textContent = dateText;
     var el2 = document.getElementById('decline-venue-text'); if (el2) el2.textContent = venueText;
+    var elSubName = document.getElementById('decline-sub-name'); if (elSubName) elSubName.textContent = name;
+
     showScreen('screen-decline');
   }
   function swapNames() {

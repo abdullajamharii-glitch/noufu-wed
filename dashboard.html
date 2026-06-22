@@ -272,6 +272,59 @@
             </div>
           </div>
 
+          <!-- Design & Customization -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Design &amp; Customization</div>
+                <div class="card-subtitle">Choose themes, patterns, fonts, and additional details</div>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="f-theme-color">Theme Color</label>
+                <select id="f-theme-color">
+                  <option value="green">Green</option>
+                  <option value="rosegold">Rosegold</option>
+                  <option value="royal">Royal Blue</option>
+                  <option value="burgundy">Burgundy</option>
+                  <option value="classic">Classic Black</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="f-bg-pattern">Background Pattern</label>
+                <select id="f-bg-pattern">
+                  <option value="none">None</option>
+                  <option value="floral">Floral</option>
+                  <option value="mandala">Mandala</option>
+                  <option value="geometric">Geometric</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="f-font-style">Font Style</label>
+                <select id="f-font-style">
+                  <option value="editorial">Editorial (Tenor Sans + Ruthie)</option>
+                  <option value="classic">Classic (Cormorant Garamond + Great Vibes)</option>
+                  <option value="playfair">Playfair (Playfair Display + Pinyon Script)</option>
+                  <option value="cinzel">Cinzel (Cinzel Decorative + Sacramento)</option>
+                  <option value="romantic">Romantic (Lora + Dancing Script)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="f-hijri">Religious / Hijri Date</label>
+                <input type="text" id="f-hijri" placeholder="e.g. 26 Shawwal 1447">
+              </div>
+              <div class="field">
+                <label for="f-phone">Contact Phone</label>
+                <input type="tel" id="f-phone" placeholder="e.g. 9995558877">
+              </div>
+              <div class="field">
+                <label for="f-dress">Dress Code (optional)</label>
+                <input type="text" id="f-dress" placeholder="e.g. Traditional Dress">
+              </div>
+            </div>
+          </div>
+
           <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:4px;">
             <button type="button" class="btn btn-ghost" onclick="loadGeneralSettings()">↺ Reset</button>
             <button type="submit" class="btn btn-primary">Save Changes</button>

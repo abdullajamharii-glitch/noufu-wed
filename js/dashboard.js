@@ -20,9 +20,15 @@ const DEFAULTS = {
   storyQuote: '"And among His signs is that He created for you mates from among yourselves, that you may dwell in tranquility with them, and He has put love and mercy between your hearts."',
   storyText: 'With hearts full of gratitude to Allah, we joyfully invite you to witness and celebrate the Nikah of Mohammed Noufal and Khadeejathul Kubra CA. May this union be filled with blessings, love, and happiness.',
   musicUrl: '',
-  musicAutoplay: false,
+  musicAutoplay: true,
   musicEnabled: true,
   galleryImages: [],
+  themeColor: 'rosegold',
+  backgroundPattern: 'floral',
+  fontStyle: 'editorial',
+  hijri: '',
+  phone: '',
+  dress: '',
 };
 
 // ─── Storage Helpers ───────────────────────────────
@@ -143,6 +149,12 @@ function loadGeneralSettings() {
   setField('f-message',          cfg.message);
   setField('f-story-quote',      cfg.storyQuote);
   setField('f-story-text',       cfg.storyText);
+  setField('f-theme-color',      cfg.themeColor);
+  setField('f-bg-pattern',       cfg.backgroundPattern);
+  setField('f-font-style',       cfg.fontStyle);
+  setField('f-hijri',            cfg.hijri);
+  setField('f-phone',            cfg.phone);
+  setField('f-dress',            cfg.dress);
 }
 
 document.getElementById('form-general').addEventListener('submit', (e) => {
@@ -160,6 +172,12 @@ document.getElementById('form-general').addEventListener('submit', (e) => {
     message:          getField('f-message'),
     storyQuote:       getField('f-story-quote'),
     storyText:        getField('f-story-text'),
+    themeColor:       getField('f-theme-color'),
+    backgroundPattern:getField('f-bg-pattern'),
+    fontStyle:        getField('f-font-style'),
+    hijri:            getField('f-hijri'),
+    phone:            getField('f-phone'),
+    dress:            getField('f-dress'),
   });
 });
 
