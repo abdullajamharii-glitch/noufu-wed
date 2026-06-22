@@ -148,6 +148,7 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  /* ── Dark mode FAB (top-right) ── */
   .fab-controls {
     position: fixed;
     top: 14px;
@@ -170,6 +171,72 @@
     transition: transform 0.15s;
   }
   .fab-btn:hover { transform: scale(1.08); }
+
+  /* ── Music FAB (bottom-right vinyl style) ── */
+  .music-fab-wrap {
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .music-fab {
+    position: relative;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 38%, #3a3a3a 0%, #111 60%, #000 100%);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35), 0 0 0 3px rgba(255,255,255,0.07);
+    cursor: pointer;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+  }
+  .music-fab::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.12);
+  }
+  .music-fab::after {
+    content: '';
+    position: absolute;
+    inset: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #555 0%, #222 70%);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
+  }
+  .music-fab-icon {
+    position: relative;
+    z-index: 2;
+    font-size: 18px;
+    line-height: 1;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    pointer-events: none;
+  }
+  .music-fab.spinning {
+    animation: vinylSpin 3s linear infinite;
+  }
+  @keyframes vinylSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .music-fab:hover {
+    box-shadow: 0 6px 28px rgba(0,0,0,0.45), 0 0 0 4px var(--accent);
+  }
+  .music-fab-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: var(--font-sans);
+    opacity: 0.8;
+  }
 
   /* ══ CREATOR ══ */
   #screen-creator {
@@ -719,16 +786,27 @@
 </head>
 <body class="fs-editorial">
 
-<audio id="bg-music" loop preload="none">
-  <source src="audio/music.mp3" type="audio/mpeg">
-</audio>
+<!-- Hidden YouTube iframe for background music -->
+<iframe id="yt-player" width="1" height="1"
+  src="https://www.youtube.com/embed/VtSoDCOThOg?autoplay=1&loop=1&playlist=VtSoDCOThOg&controls=0&mute=0&enablejsapi=1&origin=" 
+  allow="autoplay; encrypted-media"
+  style="position:fixed;opacity:0;pointer-events:none;z-index:-1;"
+  frameborder="0"></iframe>
 
 <canvas id="petalCanvas"></canvas>
 <canvas id="confettiCanvas"></canvas>
 
+<!-- Dark mode button stays top-right -->
 <div class="fab-controls">
-  <button class="fab-btn" id="fab-music" onclick="toggleMusic()" title="Toggle music">🔇</button>
   <button class="fab-btn" id="fab-dark" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
+</div>
+
+<!-- Music button: vinyl style, bottom-right -->
+<div class="music-fab-wrap">
+  <button class="music-fab spinning" id="fab-music" onclick="toggleMusic()" title="Toggle music" aria-label="Toggle background music">
+    <span class="music-fab-icon" id="music-icon">♫</span>
+  </button>
+  <span class="music-fab-label" id="music-label">Music</span>
 </div>
 
 <!-- ══ CREATOR ══ -->
@@ -1060,7 +1138,7 @@
 
 <!-- ══ STICKY FOOTER ══ -->
 <footer class="site-footer">
-  <a href="dashboard.html" style="color:var(--muted); text-decoration:none; font-size:10px; letter-spacing:1.4px;">Admin Dashboard</a>
+  <!-- Admin link hidden from public view -->
 </footer>
 
 <script>
@@ -1089,8 +1167,8 @@
     if (stored) localCfg = JSON.parse(stored);
   } catch(e) {}
 
-  var defaultG = 'Mohammed Noufal';
-  var defaultB = 'Khadeejathul Kubra';
+  var defaultG = 'Noufal';
+  var defaultB = 'Kubra';
   var defaultV = 'KH Hall, Kalanad';
   var defaultA = 'Kalanad, Kerala';
   var defaultD = '2026-07-20';
@@ -1341,34 +1419,38 @@
     setTimeout(function() { showScreen('screen-invite'); }, 2400);
   }
 
-  var bgMusic = document.getElementById('bg-music');
-  var musicPlaying = false;
+  // YouTube player-based music control
+  var musicPlaying = true; // starts muted until user interacts
+  var ytPlayer = document.getElementById('yt-player');
 
   function startMusic() {
     if (musicPlaying) return;
-    bgMusic.volume = 1;
-    var playPromise = bgMusic.play();
-    if (playPromise !== undefined) {
-      playPromise.then(function() {
-        musicPlaying = true;
-        var btn = document.getElementById('fab-music');
-        if (btn) { btn.textContent = '🔊'; btn.classList.add('playing'); }
-      }).catch(function(err) {
-        console.warn('Music play blocked by browser autoplay policy:', err);
-        musicPlaying = false;
-      });
-    } else {
-      musicPlaying = true;
-      var btn = document.getElementById('fab-music');
-      if (btn) { btn.textContent = '🔊'; btn.classList.add('playing'); }
+    // Unmute YouTube iframe via postMessage
+    if (ytPlayer && ytPlayer.contentWindow) {
+      ytPlayer.contentWindow.postMessage(JSON.stringify({event:'command', func:'unMute', args:[]}), '*');
+      ytPlayer.contentWindow.postMessage(JSON.stringify({event:'command', func:'playVideo', args:[]}), '*');
     }
+    musicPlaying = true;
+    var btn = document.getElementById('fab-music');
+    var icon = document.getElementById('music-icon');
+    var label = document.getElementById('music-label');
+    if (btn) btn.classList.add('spinning');
+    if (icon) icon.textContent = '♫';
+    if (label) label.textContent = 'Music';
   }
 
   function stopMusic() {
-    bgMusic.pause();
+    if (ytPlayer && ytPlayer.contentWindow) {
+      ytPlayer.contentWindow.postMessage(JSON.stringify({event:'command', func:'mute', args:[]}), '*');
+      ytPlayer.contentWindow.postMessage(JSON.stringify({event:'command', func:'pauseVideo', args:[]}), '*');
+    }
     musicPlaying = false;
     var btn = document.getElementById('fab-music');
-    if (btn) { btn.textContent = '🔇'; btn.classList.remove('playing'); }
+    var icon = document.getElementById('music-icon');
+    var label = document.getElementById('music-label');
+    if (btn) btn.classList.remove('spinning');
+    if (icon) icon.textContent = '▶';
+    if (label) label.textContent = 'Paused';
   }
 
   function toggleMusic() {
@@ -1379,20 +1461,31 @@
     }
   }
 
-  // Attempt autoplay immediately and register backup interaction triggers for modern browsers
-  setTimeout(function() {
-    startMusic();
-    var interactionEvents = ['click', 'touchstart', 'scroll', 'keydown'];
-    function triggerAutoplay() {
-      startMusic();
-      interactionEvents.forEach(function(e) {
-        document.removeEventListener(e, triggerAutoplay);
-      });
+  // Update iframe src with the page's origin for postMessage
+  (function() {
+    var ytEl = document.getElementById('yt-player');
+    if (ytEl) {
+      var origin = encodeURIComponent(location.origin);
+      ytEl.src = 'https://www.youtube.com/embed/VtSoDCOThOg?autoplay=1&loop=1&playlist=VtSoDCOThOg&controls=0&enablejsapi=1&origin=' + origin;
     }
+  })();
+
+  // On first user interaction, ensure music plays
+  var interactionEvents = ['click', 'touchstart'];
+  function triggerAutoplay() {
+    if (!musicPlaying) startMusic();
     interactionEvents.forEach(function(e) {
-      document.addEventListener(e, triggerAutoplay);
+      document.removeEventListener(e, triggerAutoplay);
     });
-  }, 100);
+  }
+  interactionEvents.forEach(function(e) {
+    document.addEventListener(e, triggerAutoplay);
+  });
+
+  // Also try to start music after 1s delay
+  setTimeout(function() {
+    if (!musicPlaying) startMusic();
+  }, 1000);
 
   function handleYes(event) {
     var nameInput = document.getElementById('guest-rsvp-name');
