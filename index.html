@@ -1470,12 +1470,28 @@
     function setupCanvas() {
       var rect = canvas.parentNode.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
-      canvas.width  = rect.width;
-      canvas.height = rect.height;
+      
+      // Get device pixel ratio for high-DPI (retina) screen support
+      var dpr = window.devicePixelRatio || 1;
+      
+      // Scale canvas buffer size
+      canvas.width  = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      
+      // Keep canvas display CSS size constant
+      canvas.style.width  = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      
       var ctx = canvas.getContext('2d');
+      
+      // Scale all drawing operations by DPR so everything stays crisp
+      ctx.scale(dpr, dpr);
+      
+      var w = rect.width;
+      var h = rect.height;
 
       // 1. Draw premium metallic gold gradient background
-      var grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      var grad = ctx.createLinearGradient(0, 0, w, h);
       grad.addColorStop(0, '#8b6c3c');    // Deep gold
       grad.addColorStop(0.2, '#d4af37');  // Metallic gold
       grad.addColorStop(0.4, '#f9e8a2');  // Light bright gold
@@ -1483,34 +1499,34 @@
       grad.addColorStop(0.8, '#aa8233');  // Medium gold
       grad.addColorStop(1, '#7a5b29');    // Dark gold
       ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, w, h);
 
       // 2. Add organic noise/metallic grain effect
       ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
       for (var i = 0; i < 400; i++) {
-        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1.2, 1.2);
+        ctx.fillRect(Math.random() * w, Math.random() * h, 1.2, 1.2);
       }
       ctx.fillStyle = 'rgba(60, 40, 10, 0.15)';
       for (var i = 0; i < 300; i++) {
-        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
+        ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1);
       }
 
       // 3. Draw elegant geometric/art-deco style double border
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
       ctx.lineWidth = 1;
-      roundRect(ctx, 6, 6, canvas.width - 12, canvas.height - 12, 8);
+      roundRect(ctx, 6, 6, w - 12, h - 12, 8);
       ctx.stroke();
 
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
       ctx.lineWidth = 0.5;
-      roundRect(ctx, 10, 10, canvas.width - 20, canvas.height - 20, 6);
+      roundRect(ctx, 10, 10, w - 20, h - 20, 6);
       ctx.stroke();
 
       // Corner ornaments (tiny dots)
       ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
       var corners = [
-        {x: 10, y: 10}, {x: canvas.width - 10, y: 10},
-        {x: 10, y: canvas.height - 10}, {x: canvas.width - 10, y: canvas.height - 10}
+        {x: 10, y: 10}, {x: w - 10, y: 10},
+        {x: 10, y: h - 10}, {x: w - 10, y: h - 10}
       ];
       corners.forEach(function(c) {
         ctx.beginPath();
@@ -1519,9 +1535,9 @@
       });
 
       // 4. Draw central gold foil wax-seal medallion
-      var cx = canvas.width / 2;
-      var cy = canvas.height / 2;
-      var radius = Math.min(canvas.height * 0.38, 48);
+      var cx = w / 2;
+      var cy = h / 2;
+      var radius = Math.min(h * 0.38, 48);
 
       // Shadow for emblem depth
       ctx.save();
