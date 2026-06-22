@@ -788,7 +788,7 @@
 
 <!-- Hidden YouTube iframe for background music -->
 <iframe id="yt-player" width="1" height="1"
-  src="https://www.youtube.com/embed/VtSoDCOThOg?autoplay=1&loop=1&playlist=VtSoDCOThOg&controls=0&mute=0&enablejsapi=1&origin=" 
+  src="https://www.youtube.com/embed/VtSoDCOThOg?autoplay=1&loop=1&playlist=VtSoDCOThOg&controls=0&mute=1&enablejsapi=1&origin=" 
   allow="autoplay; encrypted-media"
   style="position:fixed;opacity:0;pointer-events:none;z-index:-1;"
   frameborder="0"></iframe>
@@ -1022,9 +1022,7 @@
       </a>
     </div>
 
-    <div class="form-group" style="text-align: left; margin-bottom: 15px; width: 100%;">
-      <input type="text" id="guest-rsvp-name" placeholder="Your Name" style="width: 100%; border: 0.5px solid var(--border); border-radius: 50px; padding: 12px 18px; font-family: var(--font-sans); font-size: 13px; color: var(--text); background: var(--cream); outline: none; text-align: center;">
-    </div>
+    <!-- Removed guest-rsvp-name form group -->
 
     <p class="tag" style="margin-bottom:10px;">Will you attend?</p>
     <div class="rsvp-grid">
@@ -1177,6 +1175,7 @@
   var defaultTh = 'rosegold';
   var defaultPt = 'floral';
   var defaultFs = 'editorial';
+  var defaultMaps = 'https://maps.app.goo.gl/m7dLjTymcnaX3PqX6';
 
   var INV = {
     groom:    pget('g',  'groom')     || (localCfg ? localCfg.person1 : defaultG),
@@ -1187,7 +1186,7 @@
     time:     pget('t',  'time')      || (localCfg ? localCfg.ceremonyTime : defaultT),
     hijri:    pget('hj', 'hijri')     || (localCfg ? localCfg.hijri : ''),
     phone:    pget('p',  'phone')     || (localCfg ? localCfg.phone : ''),
-    maps:     pget('m',  'maps')      || (localCfg ? (localCfg.musicUrl && localCfg.musicUrl.startsWith('http') ? localCfg.musicUrl : '') : ''),
+    maps:     pget('m',  'maps')      || (localCfg ? (localCfg.mapsUrl || localCfg.musicUrl || defaultMaps) : defaultMaps),
     theme:    pget('th', 'theme')     || (localCfg ? localCfg.themeColor : defaultTh),
     pattern:  pget('pt', 'pattern')   || (localCfg ? localCfg.backgroundPattern : defaultPt),
     fontstyle:pget('fs', 'fontstyle') || (localCfg ? localCfg.fontStyle : defaultFs),
@@ -1420,12 +1419,17 @@
   }
 
   // YouTube player-based music control
-  var musicPlaying = true; // starts muted until user interacts
+  var musicPlaying = true; // starts playing (muted) on load
   var ytPlayer = document.getElementById('yt-player');
 
   function startMusic() {
-    if (musicPlaying) return;
-    // Unmute YouTube iframe via postMessage
+    if (musicPlaying) {
+      if (ytPlayer && ytPlayer.contentWindow) {
+        ytPlayer.contentWindow.postMessage(JSON.stringify({event:'command', func:'unMute', args:[]}), '*');
+        ytPlayer.contentWindow.postMessage(JSON.stringify({event:'command', func:'playVideo', args:[]}), '*');
+      }
+      return;
+    }
     if (ytPlayer && ytPlayer.contentWindow) {
       ytPlayer.contentWindow.postMessage(JSON.stringify({event:'command', func:'unMute', args:[]}), '*');
       ytPlayer.contentWindow.postMessage(JSON.stringify({event:'command', func:'playVideo', args:[]}), '*');
@@ -1466,14 +1470,17 @@
     var ytEl = document.getElementById('yt-player');
     if (ytEl) {
       var origin = encodeURIComponent(location.origin);
-      ytEl.src = 'https://www.youtube.com/embed/VtSoDCOThOg?autoplay=1&loop=1&playlist=VtSoDCOThOg&controls=0&enablejsapi=1&origin=' + origin;
+      ytEl.src = 'https://www.youtube.com/embed/VtSoDCOThOg?autoplay=1&loop=1&playlist=VtSoDCOThOg&controls=0&mute=1&enablejsapi=1&origin=' + origin;
     }
   })();
 
-  // On first user interaction, ensure music plays
-  var interactionEvents = ['click', 'touchstart'];
+  // On first user interaction, unmute the background video
+  var interactionEvents = ['click', 'touchstart', 'scroll'];
   function triggerAutoplay() {
-    if (!musicPlaying) startMusic();
+    if (ytPlayer && ytPlayer.contentWindow) {
+      ytPlayer.contentWindow.postMessage(JSON.stringify({event:'command', func:'unMute', args:[]}), '*');
+      ytPlayer.contentWindow.postMessage(JSON.stringify({event:'command', func:'playVideo', args:[]}), '*');
+    }
     interactionEvents.forEach(function(e) {
       document.removeEventListener(e, triggerAutoplay);
     });
@@ -1482,24 +1489,8 @@
     document.addEventListener(e, triggerAutoplay);
   });
 
-  // Also try to start music after 1s delay
-  setTimeout(function() {
-    if (!musicPlaying) startMusic();
-  }, 1000);
-
   function handleYes(event) {
-    var nameInput = document.getElementById('guest-rsvp-name');
-    var name = nameInput ? nameInput.value.trim() : '';
-    if (!name) {
-      if (nameInput) {
-        nameInput.style.borderColor = 'var(--red-soft)';
-        nameInput.placeholder = 'Please enter your name to RSVP';
-        nameInput.focus();
-      }
-      return;
-    }
-    if (nameInput) nameInput.style.borderColor = '';
-    window.tempRsvpName = name;
+    window.tempRsvpName = 'Guest';
 
     launchFullPagePopper();
     try {
@@ -1541,17 +1532,7 @@
   }
 
   function declineRsvp() {
-    var nameInput = document.getElementById('guest-rsvp-name');
-    var name = nameInput ? nameInput.value.trim() : '';
-    if (!name) {
-      if (nameInput) {
-        nameInput.style.borderColor = 'var(--red-soft)';
-        nameInput.placeholder = 'Please enter your name to RSVP';
-        nameInput.focus();
-      }
-      return;
-    }
-    if (nameInput) nameInput.style.borderColor = '';
+    var name = 'Guest';
 
     var rsvps = [];
     try {
