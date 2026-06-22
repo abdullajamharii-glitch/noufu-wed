@@ -665,10 +665,15 @@
     left: 0;
     width: 100%;
     height: 100%;
-    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size: 24px;'><text y='24'>✨</text></svg>"), crosshair;
+    cursor: pointer;
     z-index: 10;
     touch-action: none;
     border-radius: 12px;
+    animation: scratchPulse 2s ease-in-out infinite;
+  }
+  @keyframes scratchPulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(212, 175, 55, 0.4); }
+    50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.8), 0 0 40px rgba(212, 175, 55, 0.3); }
   }
   .date-cell { padding: 16px 12px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .date-cell + .date-cell { border-left: 0.5px solid var(--border); }
@@ -1416,176 +1421,215 @@
   function initScratchCard() {
     var canvas = document.getElementById('scratch-canvas');
     if (!canvas || isScratched) return;
-    
-    function drawFoil() {
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function drawFoilOverlay(ctx, w, h) {
+      // Diagonal shimmer streaks
+      for (var s = 0; s < 6; s++) {
+        var sx = (w / 6) * s;
+        var shG = ctx.createLinearGradient(sx, 0, sx + 40, h);
+        shG.addColorStop(0,   'rgba(255,255,220,0)');
+        shG.addColorStop(0.5, 'rgba(255,255,220,0.22)');
+        shG.addColorStop(1,   'rgba(255,255,220,0)');
+        ctx.fillStyle = shG;
+        ctx.fillRect(sx, 0, 40, h);
+      }
+      // Fine sparkles
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      for (var i = 0; i < 340; i++) {
+        var px = Math.random() * w;
+        var py = Math.random() * h;
+        var pr = Math.random() * 1.3;
+        ctx.beginPath();
+        ctx.arc(px, py, pr, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // Dashed inner border
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 5]);
+      roundRect(ctx, 7, 7, w - 14, h - 14, 8);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+      // Dark pill label
+      var cx = w / 2, cy = h / 2;
+      var pillW = Math.min(w - 28, 210), pillH = 34;
+      ctx.save();
+      ctx.fillStyle = 'rgba(90, 50, 0, 0.50)';
+      roundRect(ctx, cx - pillW / 2, cy - pillH / 2, pillW, pillH, 17);
+      ctx.fill();
+      ctx.restore();
+      // Text
+      ctx.fillStyle = 'rgba(255,248,210,1)';
+      ctx.shadowColor = 'rgba(80,40,0,0.55)';
+      ctx.shadowBlur = 5;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      var fs = w < 280 ? 11 : 13;
+      ctx.font = 'italic ' + fs + 'px "Cormorant Garamond", Georgia, serif';
+      ctx.fillText('✨  Tap to Reveal the Date  ✨', cx, cy);
+      ctx.shadowBlur = 0;
+    }
+
+    function setupCanvas() {
       var rect = canvas.parentNode.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
-      
-      canvas.width = rect.width;
+      canvas.width  = rect.width;
       canvas.height = rect.height;
-      
       var ctx = canvas.getContext('2d');
-      
-      // Draw luxury metallic gold/champagne gradient
-      var grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      grad.addColorStop(0, '#d4af37');
-      grad.addColorStop(0.2, '#f3e5ab');
-      grad.addColorStop(0.4, '#aa771c');
-      grad.addColorStop(0.6, '#ffd700');
-      grad.addColorStop(0.8, '#f3e5ab');
-      grad.addColorStop(1, '#b8860b');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Draw metallic sparkle/noise pattern
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      for (var i = 0; i < 250; i++) {
-        var x = Math.random() * canvas.width;
-        var y = Math.random() * canvas.height;
-        var r = Math.random() * 1.5;
+      // Try texture image first, fallback to gradient
+      var img = new Image();
+      img.onload = function() {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        drawFoilOverlay(ctx, canvas.width, canvas.height);
+      };
+      img.onerror = function() {
+        var grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        grad.addColorStop(0,    '#c8952a');
+        grad.addColorStop(0.15, '#f5e17a');
+        grad.addColorStop(0.3,  '#d4a017');
+        grad.addColorStop(0.5,  '#ffe066');
+        grad.addColorStop(0.7,  '#c8952a');
+        grad.addColorStop(0.85, '#f5e17a');
+        grad.addColorStop(1,    '#a07820');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawFoilOverlay(ctx, canvas.width, canvas.height);
+      };
+      img.src = 'images/gold_foil_texture.png';
+    }
+
+    if (scratchCardInitialized) { setupCanvas(); return; }
+
+    setTimeout(function() {
+      setupCanvas();
+
+      var ctx = canvas.getContext('2d');
+      var isDrawing = false;
+      var lastX = 0, lastY = 0;
+
+      function getPos(e) {
+        var rect2 = canvas.getBoundingClientRect();
+        var cx2 = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+        var cy2 = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
+        return { x: cx2 - rect2.left, y: cy2 - rect2.top };
+      }
+
+      function scratchAt(x, y, r) {
+        ctx.globalCompositeOperation = 'destination-out';
+        var grd = ctx.createRadialGradient(x, y, 0, x, y, r);
+        grd.addColorStop(0,   'rgba(0,0,0,1)');
+        grd.addColorStop(0.65,'rgba(0,0,0,0.95)');
+        grd.addColorStop(1,   'rgba(0,0,0,0)');
+        ctx.fillStyle = grd;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.fill();
       }
-      
-      // Draw decorative inner borders
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 4]);
-      ctx.strokeRect(6, 6, canvas.width - 12, canvas.height - 12);
-      ctx.setLineDash([]); // Reset
-      
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-      ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
 
-      // Draw premium serif text
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-      ctx.shadowBlur = 4;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      
-      var fontSize = canvas.width < 290 ? 12 : 14;
-      ctx.font = 'italic 600 ' + fontSize + 'px "Cormorant Garamond", Georgia, serif';
-      ctx.fillText('✨ Scratch to Reveal Date ✨', canvas.width / 2, canvas.height / 2);
-    }
-
-    if (scratchCardInitialized) {
-      drawFoil();
-      return;
-    }
-    
-    setTimeout(function() {
-      drawFoil();
-      
-      var ctx = canvas.getContext('2d');
-      var isDrawing = false;
-      var lastX = 0;
-      var lastY = 0;
-      
-      function getPos(e) {
-        var r = canvas.getBoundingClientRect();
-        var clientX, clientY;
-        if (e.touches && e.touches.length > 0) {
-          clientX = e.touches[0].clientX;
-          clientY = e.touches[0].clientY;
-        } else {
-          clientX = e.clientX;
-          clientY = e.clientY;
-        }
-        return {
-          x: clientX - r.left,
-          y: clientY - r.top
-        };
-      }
-      
-      function scratchStart(e) {
-        isDrawing = true;
-        var pos = getPos(e);
-        lastX = pos.x;
-        lastY = pos.y;
-        scratchDraw(e);
-      }
-      
-      function scratchDraw(e) {
-        if (!isDrawing) return;
-        if (e.cancelable) e.preventDefault();
-        
-        var pos = getPos(e);
-        
+      function scratchLineTo(x1, y1, x2, y2) {
         ctx.globalCompositeOperation = 'destination-out';
         ctx.beginPath();
-        ctx.lineWidth = 32; // scratch thickness
+        ctx.lineWidth = 68;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(pos.x, pos.y);
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
         ctx.stroke();
-        
-        lastX = pos.x;
-        lastY = pos.y;
       }
-      
-      function scratchEnd() {
-        if (!isDrawing) return;
-        isDrawing = false;
-        checkPercentage();
-      }
-      
-      function checkPercentage() {
-        var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        var pixels = imgData.data;
-        var transparent = 0;
-        var step = 10;
-        var count = 0;
-        for (var i = 3; i < pixels.length; i += 4 * step) {
-          count++;
-          if (pixels[i] === 0) transparent++;
-        }
-        var percent = (transparent / count) * 100;
-        if (percent > 45) {
-          revealDate();
-        }
-      }
-      
+
       function revealDate() {
-        canvas.style.transition = 'opacity 0.8s ease-out';
+        if (isScratched) return;
+        isScratched = true;
+        canvas.style.transition = 'opacity 0.7s ease-out';
         canvas.style.opacity = '0';
         canvas.style.pointerEvents = 'none';
-        isScratched = true;
         if (canvasResizeListener) {
           window.removeEventListener('resize', canvasResizeListener);
           canvasResizeListener = null;
         }
         setTimeout(function() {
-          canvas.remove();
-          if (typeof launchFullPagePopper === 'function') {
-            launchFullPagePopper();
-          }
-        }, 800);
+          if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+          if (typeof launchFullPagePopper === 'function') launchFullPagePopper();
+        }, 700);
       }
-      
-      // Mouse listeners
-      canvas.addEventListener('mousedown', scratchStart);
-      canvas.addEventListener('mousemove', scratchDraw);
-      window.addEventListener('mouseup', scratchEnd);
-      
-      // Touch listeners
-      canvas.addEventListener('touchstart', scratchStart, { passive: false });
-      canvas.addEventListener('touchmove', scratchDraw, { passive: false });
-      window.addEventListener('touchend', scratchEnd);
-      
-      canvas.addEventListener('mouseleave', scratchEnd);
-      
+
+      function checkPct() {
+        var d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        var t = 0, n = 0;
+        for (var i = 3; i < d.length; i += 32) { n++; if (d[i] < 128) t++; }
+        if (n > 0 && (t / n) * 100 > 30) revealDate();
+      }
+
+      // ── Tap = instant reveal ──
+      canvas.addEventListener('click', function(e) {
+        if (isScratched) return;
+        e.preventDefault();
+        revealDate();
+      });
+      canvas.addEventListener('touchend', function(e) {
+        if (isScratched) return;
+        e.preventDefault();
+        revealDate();
+      }, { passive: false });
+
+      // ── Scratch (drag) also works ──
+      canvas.addEventListener('mousedown', function(e) {
+        if (isScratched) return;
+        isDrawing = true;
+        var p = getPos(e);
+        lastX = p.x; lastY = p.y;
+        scratchAt(p.x, p.y, 42);
+      });
+      canvas.addEventListener('mousemove', function(e) {
+        if (!isDrawing || isScratched) return;
+        var p = getPos(e);
+        scratchLineTo(lastX, lastY, p.x, p.y);
+        scratchAt(p.x, p.y, 38);
+        lastX = p.x; lastY = p.y;
+        checkPct();
+      });
+      window.addEventListener('mouseup', function() {
+        if (!isDrawing) return;
+        isDrawing = false;
+        checkPct();
+      });
+      canvas.addEventListener('touchstart', function(e) {
+        if (isScratched) return;
+        isDrawing = true;
+        var p = getPos(e);
+        lastX = p.x; lastY = p.y;
+        scratchAt(p.x, p.y, 42);
+      }, { passive: false });
+      canvas.addEventListener('touchmove', function(e) {
+        if (!isDrawing || isScratched) return;
+        if (e.cancelable) e.preventDefault();
+        var p = getPos(e);
+        scratchLineTo(lastX, lastY, p.x, p.y);
+        scratchAt(p.x, p.y, 38);
+        lastX = p.x; lastY = p.y;
+        checkPct();
+      }, { passive: false });
+      canvas.addEventListener('mouseleave', function() { isDrawing = false; });
+
       scratchCardInitialized = true;
-      
-      // Listen for window resize to redraw foil if not scratched yet
       if (!canvasResizeListener) {
-        canvasResizeListener = function() {
-          if (!isScratched) {
-            drawFoil();
-          }
-        };
+        canvasResizeListener = function() { if (!isScratched) setupCanvas(); };
         window.addEventListener('resize', canvasResizeListener);
       }
     }, 50);
