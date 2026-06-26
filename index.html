@@ -700,18 +700,8 @@
     50%       { transform: rotate(12deg) translateX(4px); }
   }
   .scratch-done-badge {
-    position: absolute;
-    top: 8px; right: 10px;
-    z-index: 1;
-    font-size: 9px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--accent);
-    opacity: 0;
-    transition: opacity 0.5s 0.4s ease;
-    font-family: var(--font-sans);
+    display: none;
   }
-  .scratch-done-badge.show { opacity: 1; }
 
   .date-row {
     display: grid;
