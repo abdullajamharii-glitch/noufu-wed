@@ -1857,6 +1857,9 @@
       if (isRevealed) return;
       var w = wrap.offsetWidth;
       var h = wrap.offsetHeight;
+      if (w === 0 || h === 0) return;
+      if (canvas.width === w && canvas.height === h) return;
+      
       canvas.width = w;
       canvas.height = h;
       drawSurface();
@@ -1890,6 +1893,13 @@
     // Initialize dimensions
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('load', resizeCanvas);
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function() {
+        resizeCanvas();
+      });
+      ro.observe(wrap);
+    }
 
     // Scratch logic
     function getMousePos(e) {
