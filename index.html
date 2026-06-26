@@ -698,7 +698,20 @@
   @keyframes scratchWiggle {
     0%, 100% { transform: rotate(-12deg) translateX(0); }
     50%       { transform: rotate(12deg) translateX(4px); }
-
+  }
+  .scratch-done-badge {
+    position: absolute;
+    top: 8px; right: 10px;
+    z-index: 1;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.5s 0.4s ease;
+    font-family: var(--font-sans);
+  }
+  .scratch-done-badge.show { opacity: 1; }
 
   .date-row {
     display: grid;
@@ -1064,6 +1077,9 @@
         <span class="scratch-hint-icon">✦</span>
         <span class="scratch-hint-text">Scratch to reveal date</span>
       </div>
+
+      <!-- Revealed badge -->
+      <span class="scratch-done-badge" id="scratch-badge">✦ Revealed</span>
 
     </div>
 
@@ -1830,6 +1846,7 @@
     var wrap   = document.getElementById('scratch-wrap');
     var canvas = document.getElementById('scratch-canvas');
     var hint   = document.getElementById('scratch-hint');
+    var badge  = document.getElementById('scratch-badge');
     if (!wrap || !canvas) return;
 
     var ctx = canvas.getContext('2d');
@@ -1945,6 +1962,7 @@
       isRevealed = true;
       canvas.classList.add('revealed');
       if (hint) hint.classList.add('hidden');
+      if (badge) badge.classList.add('show');
       
       // Fire page confetti as a reward!
       if (typeof launchConfetti === 'function') {
