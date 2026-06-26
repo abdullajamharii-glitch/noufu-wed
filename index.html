@@ -1509,21 +1509,23 @@
     var name = window.tempRsvpName || 'Guest';
     var guests = memberCount;
 
+    // Save to localStorage (local fallback)
     var rsvps = [];
-    try {
-      rsvps = JSON.parse(localStorage.getItem('wedding_rsvps') || '[]');
-    } catch(e){}
-    rsvps.push({
-      name: name,
-      email: '',
-      guests: guests,
-      attending: 'yes',
-      message: 'Attending with ' + guests + ' family members',
-      date: new Date().toLocaleString()
-    });
-    try {
-      localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps));
-    } catch(e){}
+    try { rsvps = JSON.parse(localStorage.getItem('wedding_rsvps') || '[]'); } catch(e){}
+    rsvps.push({ name: name, email: '', guests: guests, attending: 'yes', message: 'Attending with ' + guests + ' family members', date: new Date().toLocaleString() });
+    try { localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps)); } catch(e){}
+
+    // Save to Supabase (shared cloud database)
+    fetch('https://hkivsfozrmlwuyivfspn.supabase.co/rest/v1/rsvps', {
+      method: 'POST',
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhraXZzZm96cm1sd3V5aXZmc3BuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NDU2MDksImV4cCI6MjA5ODAyMTYwOX0.k4W-y7Qa-1kiaXINfyEbpqSqVjlMAKbO8o2lWtHog5Q',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhraXZzZm96cm1sd3V5aXZmc3BuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NDU2MDksImV4cCI6MjA5ODAyMTYwOX0.k4W-y7Qa-1kiaXINfyEbpqSqVjlMAKbO8o2lWtHog5Q',
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ guests: guests, attending: 'yes', date: new Date().toLocaleString() })
+    }).catch(function(){}); // Fire and forget — don't block the UI
 
     var elName = document.getElementById('final-name');
     if (elName) elName.textContent = name;
@@ -1535,21 +1537,23 @@
   function declineRsvp() {
     var name = 'Guest';
 
+    // Save to localStorage (local fallback)
     var rsvps = [];
-    try {
-      rsvps = JSON.parse(localStorage.getItem('wedding_rsvps') || '[]');
-    } catch(e){}
-    rsvps.push({
-      name: name,
-      email: '',
-      guests: 0,
-      attending: 'no',
-      message: 'Declined',
-      date: new Date().toLocaleString()
-    });
-    try {
-      localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps));
-    } catch(e){}
+    try { rsvps = JSON.parse(localStorage.getItem('wedding_rsvps') || '[]'); } catch(e){}
+    rsvps.push({ name: name, email: '', guests: 0, attending: 'no', message: 'Declined', date: new Date().toLocaleString() });
+    try { localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps)); } catch(e){}
+
+    // Save to Supabase (shared cloud database)
+    fetch('https://hkivsfozrmlwuyivfspn.supabase.co/rest/v1/rsvps', {
+      method: 'POST',
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhraXZzZm96cm1sd3V5aXZmc3BuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NDU2MDksImV4cCI6MjA5ODAyMTYwOX0.k4W-y7Qa-1kiaXINfyEbpqSqVjlMAKbO8o2lWtHog5Q',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhraXZzZm96cm1sd3V5aXZmc3BuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NDU2MDksImV4cCI6MjA5ODAyMTYwOX0.k4W-y7Qa-1kiaXINfyEbpqSqVjlMAKbO8o2lWtHog5Q',
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ guests: 0, attending: 'no', date: new Date().toLocaleString() })
+    }).catch(function(){}); // Fire and forget — don't block the UI
 
     var d = new Date(INV.date + 'T12:00:00');
     var day = d.getDate();
